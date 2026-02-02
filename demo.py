@@ -1,4 +1,5 @@
 import isengine
 
 if __name__ == "__main__":
-    isengine.show_until_input("Hello! ")
+    name = isengine.show_until_input("What's your name? ")
+    isengine.show_until_input(f"Hi, {name}!")
