@@ -28,10 +28,13 @@ class TerminalPrinter(Printer):
         os.system("clear")
 
 class TypewriterPrinter(TerminalPrinter):
-    def simple_print(self, message: str, char_duration: float = 0.1) -> None:
+    def __init__(self, char_duration = 0.1):
+        self.char_duration = char_duration
+
+    def simple_print(self, message: str) -> None:
         for c in message:
             print(c, end="", flush=True)
-            time.sleep(char_duration)
+            time.sleep(self.char_duration)
 
 
 default_printer = TerminalPrinter()
