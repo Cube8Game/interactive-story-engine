@@ -45,8 +45,6 @@ def show_until_input(message: str, clear_start: bool = True, clear_end: bool = T
     try:
         actual_printer.simple_print(message)
         inp = actual_printer.simple_input()
-    except KeyboardInterrupt:
-        raise
     finally:
         if clear_end:
             actual_printer.clear()
@@ -59,8 +57,6 @@ def show_seconds(message: str, duration, clear_start: bool = True, clear_end: bo
     try:
         actual_printer.simple_print(message)
         time.sleep(duration)
-    except KeyboardInterrupt:
-        raise
     finally:
         if clear_end:
             actual_printer.clear()
