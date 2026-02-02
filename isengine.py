@@ -17,7 +17,7 @@ def show_until_input(message: str, clear_start: bool = True, clear_end: bool = T
             clear()
     return inp
 
-def show_seconds(message: str, duration, clear_start: bool = True, clear_end: bool = True):
+def show_seconds(message: str, duration, clear_start: bool = True, clear_end: bool = True) -> None:
     if clear_start:
         clear()
     try:
