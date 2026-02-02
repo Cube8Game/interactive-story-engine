@@ -1,10 +1,12 @@
-from examples import greeting, typewriter
 import isengine
 
 if __name__ == "__main__":
     demo = isengine.show_until_input("Select a demo: ")
     match demo:
         case "greeting":
-            greeting.run(isengine)
+            name = isengine.show_until_input("What's your name? ")
+            isengine.show_seconds(f"Hi, {name}!", 3)
         case "typewriter":
-            typewriter.run(isengine)
+            isengine.default_printer = isengine.TypewriterPrinter()
+            inp = isengine.show_until_input("Hello! ")
+            isengine.show_seconds(f"{inp}!", 3)
