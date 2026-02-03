@@ -28,7 +28,7 @@ class TerminalPrinter(Printer):
         os.system("clear")
 
 class TypewriterPrinter(TerminalPrinter):
-    def __init__(self, char_duration = 0.1):
+    def __init__(self, char_duration: float = 0.1):
         self.char_duration = char_duration
 
     def simple_print(self, message: str) -> None:
@@ -53,7 +53,7 @@ def show_until_input(message: str, clear_start: bool = True, clear_end: bool = T
             actual_printer.clear()
     return inp
 
-def show_seconds(message: str, duration, clear_start: bool = True, clear_end: bool = True, printer: Printer|None = None) -> None:
+def show_seconds(message: str, duration: float, clear_start: bool = True, clear_end: bool = True, printer: Printer|None = None) -> None:
     actual_printer: Printer = printer or default_printer
     if clear_start:
         actual_printer.clear()
