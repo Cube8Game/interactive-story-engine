@@ -7,6 +7,6 @@ if __name__ == "__main__":
             name = isengine.show_until_input("What's your name? ")
             isengine.show_seconds(f"Hi, {name}!", 3)
         case "typewriter":
-            isengine.default_printer = isengine.TypewriterPrinter()
+            isengine.default_printer = isengine.TypewriterPrinter(isengine.BasicPrinter(isengine.TerminalRenderer()))
             inp = isengine.show_until_input("Hello! ")
             isengine.show_seconds(f"{inp}!", 3)

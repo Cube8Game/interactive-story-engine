@@ -4,7 +4,34 @@ import time
 from abc import ABC, abstractmethod
 
 
+class Renderer(ABC):
+    @abstractmethod
+    def read() -> str:
+        pass
+
+    @abstractmethod
+    def write(message: str) -> None:
+        pass
+
+    @abstractmethod
+    def clear():
+        pass
+
+class TerminalRenderer(Renderer):
+    def read(self) -> str:
+        return input()
+    
+    def write(self, message: str) -> None:
+        print(message, end="", flush=True)
+    
+    def clear(self) -> None: # Only supports Unix systems for now
+        os.system("clear")
+
+
 class Printer(ABC):
+    def __init__(self, renderer: Renderer):
+        self.renderer: Renderer = renderer
+
     @abstractmethod
     def simple_print(self, message: str) -> None:
         pass
@@ -17,27 +44,40 @@ class Printer(ABC):
     def clear(self) -> None:
         pass
 
-class TerminalPrinter(Printer):
+class ExtensionPrinter(Printer):
+    def __init__(self, parent: Printer):
+        self.parent: Printer = parent
+        super().__init__(self.parent.renderer)
+
+
+class BasicPrinter(Printer):
     def simple_print(self, message: str) -> None:
-        print(message, end="", flush=True)
+        self.renderer.write(message)
     
     def simple_input(self) -> str:
-        return input()
+        return self.renderer.read()
     
-    def clear(self) -> None: # Only supports Unix systems for now
-        os.system("clear")
+    def clear(self) -> None: 
+        self.renderer.clear()
 
-class TypewriterPrinter(TerminalPrinter):
-    def __init__(self, char_duration: float = 0.1):
-        self.char_duration = char_duration
+class TypewriterPrinter(ExtensionPrinter):
+    def __init__(self, parent: Printer, char_duration: float = 0.1):
+        super().__init__(parent)
+        self.char_duration: float = char_duration
 
     def simple_print(self, message: str) -> None:
         for c in message:
-            print(c, end="", flush=True)
+            self.parent.simple_print(c)
             time.sleep(self.char_duration)
 
+    def simple_input(self):
+        return self.parent.simple_input()
+    
+    def clear(self) -> None:
+        self.parent.clear()
 
-default_printer = TerminalPrinter()
+
+default_printer = BasicPrinter(TerminalRenderer())
 
 
 def show_until_input(message: str, clear_start: bool = True, clear_end: bool = True, printer: Printer|None = None) -> str:
