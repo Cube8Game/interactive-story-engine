@@ -103,3 +103,22 @@ def show_seconds(message: str, duration: float, clear_start: bool = True, clear_
     finally:
         if clear_end:
             actual_printer.clear()
+
+def multiple_choice(message: str, options: list[str], number_delimiter: str = ") ", minimum_index: int = 1, clear_start: bool = True, clear_end: bool = True, printer: Printer|None = None):
+    actual_printer: Printer = printer or default_printer
+    inp: str = ""
+    while not (len(inp) > 0 and (inp.isdigit() or inp in options)):
+        if clear_start:
+            actual_printer.clear()
+        try:
+            actual_printer.simple_print(message + "\n")
+            for i, option in enumerate(options):
+                actual_printer.simple_print(str(i + minimum_index) + number_delimiter + option + "\n")
+            inp = actual_printer.simple_input()
+        finally:
+            if clear_end:
+                actual_printer.clear()
+    if inp.isdigit():
+        return int(inp) - minimum_index
+    else:
+        return options.index(inp)
