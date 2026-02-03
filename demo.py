@@ -1,17 +1,29 @@
 import isengine
 
-options = [
-    "greeting",
-    "typewriter"
+menu = [
+    "Run demo",
+    "Change printer",
+    "Quit"
+]
+
+printer_select = [
+    "Basic printer",
+    "Typewriter"
+]
+
+printers = [
+    isengine.BasicPrinter(isengine.TerminalRenderer()),
+    isengine.TypewriterPrinter(isengine.BasicPrinter(isengine.TerminalRenderer()))
 ]
 
 if __name__ == "__main__":
-    demo = isengine.multiple_choice("Select a demo: ", options)
-    match demo:
-        case 0: # greeting
-            name = isengine.show_until_input("What's your name? ")
-            isengine.show_seconds(f"Hi, {name}!", 3)
-        case 1: # typewriter
-            isengine.default_printer = isengine.TypewriterPrinter(isengine.BasicPrinter(isengine.TerminalRenderer()))
-            inp = isengine.show_until_input("Hello! ")
-            isengine.show_seconds(f"{inp}!", 3)
+    while True:
+        choice = isengine.multiple_choice("Select an option", menu)
+        match choice:
+            case 0: # Run demo
+                name = isengine.show_until_input("What's your name? ")
+                isengine.show_seconds(f"Hi, {name}!", 3)
+            case 1: # Change printer
+                isengine.default_printer = printers[isengine.multiple_choice("Select a printer", printer_select)]
+            case 2: # Quit
+                break
