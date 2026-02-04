@@ -6,15 +6,15 @@ from abc import ABC, abstractmethod
 
 class Renderer(ABC):
     @abstractmethod
-    def read() -> str:
+    def read(self) -> str:
         pass
 
     @abstractmethod
-    def write(message: str) -> None:
+    def write(self, message: str) -> None:
         pass
 
     @abstractmethod
-    def clear():
+    def clear(self):
         pass
 
 class TerminalRenderer(Renderer):
