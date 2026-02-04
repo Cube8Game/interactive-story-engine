@@ -13,7 +13,7 @@ printer_select = [
 
 printers = [
     isengine.BasicPrinter(isengine.TerminalRenderer()),
-    isengine.TypewriterPrinter(isengine.BasicPrinter(isengine.TerminalRenderer()))
+    isengine.SkippablePrinter(isengine.TypewriterPrinter(isengine.BasicPrinter(isengine.TerminalRenderer())))
 ]
 
 if __name__ == "__main__":
