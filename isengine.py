@@ -20,6 +20,10 @@ class Renderer(ABC):
     def clear(self) -> None:
         pass
 
+    @abstractmethod
+    def submitted(self) -> bool:
+        pass
+
 class TerminalRenderer(Renderer):
     def read(self) -> str:
         return input()
@@ -29,6 +33,12 @@ class TerminalRenderer(Renderer):
     
     def clear(self) -> None: # Only supports Unix systems for now
         os.system("clear")
+    
+    def submitted(self):
+        if select.select([sys.stdin], [], [], 0)[0]:
+            sys.stdin.read(1)
+            return True
+        return False
 
 
 class Printer(ABC):
@@ -90,14 +100,13 @@ class TypewriterPrinter(ExtensionPrinter):
 class SkippablePrinter(ExtensionPrinter):
     def simple_print(self, message: str, force_immediate: bool = False, stop_condition: callable|None = None):
         my_uuid = uuid.uuid4()
-        skip: callable = lambda: my_uuid if select.select([sys.stdin], [], [], 0)[0] else None
+        skip: callable = lambda: my_uuid if self.renderer.submitted() else None
         actual_stop_condition: callable = skip
         if stop_condition:
             actual_stop_condition = lambda: stop_condition() or skip()
         skipped = self.parent.simple_print(message, force_immediate, actual_stop_condition)
         if skipped is not None:
             if skipped == my_uuid:
-                sys.stdin.read(1)
                 self.parent.clear()
                 self.parent.simple_print(message, True)
             else:
