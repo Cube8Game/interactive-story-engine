@@ -3,6 +3,7 @@ import time
 import sys
 import select
 import uuid
+import typing
 
 from abc import ABC, abstractmethod
 
@@ -46,7 +47,7 @@ class Printer(ABC):
         self.renderer: Renderer = renderer
 
     @abstractmethod
-    def simple_print(self, message: str, force_immediate: bool = False, stop_condition: callable|None = None):
+    def simple_print(self, message: str, force_immediate: bool = False, stop_condition: typing.Callable|None = None):
         pass
 
     @abstractmethod
@@ -64,7 +65,7 @@ class ExtensionPrinter(Printer):
 
 
 class BasicPrinter(Printer):
-    def simple_print(self, message: str, force_immediate: bool = False, stop_condition: callable|None = None):
+    def simple_print(self, message: str, force_immediate: bool = False, stop_condition: typing.Callable|None = None):
         self.renderer.write(message)
     
     def simple_input(self) -> str:
@@ -78,12 +79,12 @@ class TypewriterPrinter(ExtensionPrinter):
         super().__init__(parent)
         self.char_duration: float = char_duration
 
-    def simple_print(self, message: str, force_immediate: bool = False, stop_condition: callable|None = None):
+    def simple_print(self, message: str, force_immediate: bool = False, stop_condition: typing.Callable|None = None):
         if force_immediate:
             self.parent.simple_print(message, True)
             return True
-        return_false: callable = lambda: False
-        actual_stop_condition: callable = stop_condition or return_false
+        return_false: typing.Callable = lambda: False
+        actual_stop_condition: typing.Callable = stop_condition or return_false
         for c in message:
             self.parent.simple_print(c, force_immediate, actual_stop_condition)
             time.sleep(self.char_duration)
@@ -98,10 +99,10 @@ class TypewriterPrinter(ExtensionPrinter):
         self.parent.clear()
 
 class SkippablePrinter(ExtensionPrinter):
-    def simple_print(self, message: str, force_immediate: bool = False, stop_condition: callable|None = None):
+    def simple_print(self, message: str, force_immediate: bool = False, stop_condition: typing.Callable|None = None):
         my_uuid = uuid.uuid4()
-        skip: callable = lambda: my_uuid if self.renderer.submitted() else None
-        actual_stop_condition: callable = skip
+        skip: typing.Callable = lambda: my_uuid if self.renderer.submitted() else None
+        actual_stop_condition: typing.Callable = skip
         if stop_condition:
             actual_stop_condition = lambda: stop_condition() or skip()
         skipped = self.parent.simple_print(message, force_immediate, actual_stop_condition)
