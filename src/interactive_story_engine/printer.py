@@ -1,46 +1,8 @@
-import os
 import time
-import sys
-import select
 import uuid
 import typing
-
 from abc import ABC, abstractmethod
-
-
-class Renderer(ABC):
-    @abstractmethod
-    def read(self) -> str:
-        pass
-
-    @abstractmethod
-    def write(self, message: str) -> None:
-        pass
-
-    @abstractmethod
-    def clear(self) -> None:
-        pass
-
-    @abstractmethod
-    def submitted(self) -> bool:
-        pass
-
-class TerminalRenderer(Renderer):
-    def read(self) -> str:
-        return input()
-    
-    def write(self, message: str) -> None:
-        print(message, end="", flush=True)
-    
-    def clear(self) -> None: # Only supports Unix systems for now
-        os.system("clear")
-    
-    def submitted(self):
-        if select.select([sys.stdin], [], [], 0)[0]:
-            sys.stdin.read(1)
-            return True
-        return False
-
+from .renderer import Renderer
 
 class Printer(ABC):
     def __init__(self, renderer: Renderer):
@@ -57,6 +19,47 @@ class Printer(ABC):
     @abstractmethod
     def clear(self) -> None:
         pass
+
+    def show_until_input(self, message: str, clear_start: bool = True, clear_end: bool = True) -> str:
+        inp: str = ""
+        if clear_start:
+            self.clear()
+        try:
+            self.simple_print(message)
+            inp = self.simple_input()
+        finally:
+            if clear_end:
+                self.clear()
+        return inp
+    
+    def show_seconds(self, message: str, duration: float, clear_start: bool = True, clear_end: bool = True) -> None:
+        if clear_start:
+            self.clear()
+        try:
+            self.simple_print(message)
+            time.sleep(duration)
+        finally:
+            if clear_end:
+                self.clear()
+    
+    def multiple_choice(self, message: str, options: list[str], number_delimiter: str = ") ", minimum_index: int = 1, clear_start: bool = True, clear_end: bool = True):
+        inp: str = ""
+        while not (len(inp) > 0 and (inp.isdigit() or inp in options)):
+            if clear_start:
+                self.clear()
+            try:
+                actual_message = message + "\n"
+                for i, option in enumerate(options):
+                    actual_message += str(i + minimum_index) + number_delimiter + option + "\n"
+                self.simple_print(actual_message)
+                inp = self.simple_input()
+            finally:
+                if clear_end:
+                    self.clear()
+        if inp.isdigit():
+            return int(inp) - minimum_index
+        else:
+            return options.index(inp)
 
 class ExtensionPrinter(Printer):
     def __init__(self, parent: Printer):
@@ -118,51 +121,3 @@ class SkippablePrinter(ExtensionPrinter):
     
     def clear(self) -> None:
         self.parent.clear()
-
-
-default_printer = BasicPrinter(TerminalRenderer())
-
-
-def show_until_input(message: str, clear_start: bool = True, clear_end: bool = True, printer: Printer|None = None) -> str:
-    actual_printer: Printer = printer or default_printer
-    inp: str = ""
-    if clear_start:
-        actual_printer.clear()
-    try:
-        actual_printer.simple_print(message)
-        inp = actual_printer.simple_input()
-    finally:
-        if clear_end:
-            actual_printer.clear()
-    return inp
-
-def show_seconds(message: str, duration: float, clear_start: bool = True, clear_end: bool = True, printer: Printer|None = None) -> None:
-    actual_printer: Printer = printer or default_printer
-    if clear_start:
-        actual_printer.clear()
-    try:
-        actual_printer.simple_print(message)
-        time.sleep(duration)
-    finally:
-        if clear_end:
-            actual_printer.clear()
-
-def multiple_choice(message: str, options: list[str], number_delimiter: str = ") ", minimum_index: int = 1, clear_start: bool = True, clear_end: bool = True, printer: Printer|None = None):
-    actual_printer: Printer = printer or default_printer
-    inp: str = ""
-    while not (len(inp) > 0 and (inp.isdigit() or inp in options)):
-        if clear_start:
-            actual_printer.clear()
-        try:
-            actual_message = message + "\n"
-            for i, option in enumerate(options):
-                actual_message += str(i + minimum_index) + number_delimiter + option + "\n"
-            actual_printer.simple_print(actual_message)
-            inp = actual_printer.simple_input()
-        finally:
-            if clear_end:
-                actual_printer.clear()
-    if inp.isdigit():
-        return int(inp) - minimum_index
-    else:
-        return options.index(inp)

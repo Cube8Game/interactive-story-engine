@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "interactive-story-engine"
+version = "0.1.0"
+description = "A Python library for creating interactive text-based story games"
+readme = "README.md"
+requires-python = ">=3.9"
+
+authors = [
+{ name = "Interactive Story Engine Contributors" }
+]
+
+license = { text = "MIT" }
+
+keywords = [
+"interactive fiction",
+"text adventure",
+"story engine",
+"game development",
+"terminal games"
+]
+
+classifiers = [
+"Programming Language :: Python :: 3",
+"Programming Language :: Python :: 3 :: Only",
+"License :: OSI Approved :: MIT License",
+"Operating System :: OS Independent",
+"Topic :: Games/Entertainment",
+"Topic :: Software Development :: Libraries"
+]
+
+dependencies = []
+
+[project.urls]
+Homepage = "https://gitlab.com/amysteryname/interactive-story-engine"
+Repository = "https://gitlab.com/amysteryname/interactive-story-engine"
+
+[tool.setuptools.packages.find]
+where = ["src"]

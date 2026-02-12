@@ -1,5 +1,7 @@
-import isengine
+import interactive_story_engine as ise
 import random
+
+default_printer = ise.BasicPrinter(ise.TerminalRenderer())
 
 class Item:
     def __init__(self, name: str):
@@ -53,26 +55,26 @@ def bossfight(boss_name: str, boss_max_health: int, boss_weapon: Weapon):
     player_health = player_max_health
     menu_prompt = f"{boss_name} approaches!"
     while True:
-        choice = isengine.multiple_choice(menu_prompt, fight_menu)
+        choice = default_printer.multiple_choice(menu_prompt, fight_menu)
         match choice:
             case 0:
-                choice = isengine.multiple_choice("Select an item to use", map(lambda x: x.name, inventory))
+                choice = default_printer.multiple_choice("Select an item to use", map(lambda x: x.name, inventory))
                 item = inventory[choice]
                 if isinstance(item, Food):
                     regen = item.get_regen()
                     player_health += regen
                     player_health = min(player_health, player_max_health)
-                    isengine.show_seconds(f"You ate the {item.name} and gained {regen} HP! You now have {player_health} HP.", 3)
+                    default_printer.show_seconds(f"You ate the {item.name} and gained {regen} HP! You now have {player_health} HP.", 3)
                 elif isinstance(item, Weapon):
                     damage = item.get_damage()
                     boss_health -= damage
                     boss_health = max(boss_health, 0)
-                    isengine.show_seconds(f"You hit {boss_name} and dealt {damage} damage! {boss_name} now has {boss_health} HP.", 3)
+                    default_printer.show_seconds(f"You hit {boss_name} and dealt {damage} damage! {boss_name} now has {boss_health} HP.", 3)
                     if boss_health <= 0:
-                        isengine.show_seconds(f"{boss_name} collapsed!", 2)
+                        default_printer.show_seconds(f"{boss_name} collapsed!", 2)
                         break
             case 1:
-                isengine.show_seconds("You flee the scene...", 2)
+                default_printer.show_seconds("You flee the scene...", 2)
                 break
         damage = boss_weapon.get_damage()
         player_health -= damage
