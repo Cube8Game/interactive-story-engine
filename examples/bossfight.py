@@ -64,6 +64,7 @@ def bossfight(boss_name: str, boss_max_health: int, boss_weapon: Weapon):
                     regen = item.get_regen()
                     player_health += regen
                     player_health = min(player_health, player_max_health)
+                    inventory.pop(choice)
                     default_printer.show_seconds(f"You ate the {item.name} and gained {regen} HP! You now have {player_health} HP.", 3)
                 elif isinstance(item, Weapon):
                     damage = item.get_damage()
